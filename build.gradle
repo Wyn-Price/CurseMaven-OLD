@@ -53,7 +53,7 @@ pluginBundle {
     description = 'Allow easy access to curseforge files'
 
     plugins() {
-        gradleHookPlugin {
+        curseGradlePlugin {
             displayName = 'CurseMaven'
             version = project.version
             tags = ['maven', 'curseforge', 'minecraft', 'forge']
