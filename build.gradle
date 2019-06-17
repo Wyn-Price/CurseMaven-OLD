@@ -3,12 +3,24 @@ plugins {
     id 'groovy'
     id 'maven-publish'
     id "java-gradle-plugin"
+    id "com.gradle.plugin-publish" version "0.10.1"
 }
 
 group 'com.wynprice.cursemaven'
 version '1.0.0'
 
 sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile localGroovy()
+
+    compile 'org.jsoup:jsoup:1.8.3'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
@@ -26,6 +38,30 @@ artifacts {
     archives sourcesJar
 }
 
+gradlePlugin {
+    plugins {
+        curseGradlePlugin {
+            id = 'com.wynprice.cursemaven'
+            implementationClass = 'com.wynprice.cursemaven.CurseMavenPlugin'
+        }
+    }
+}
+
+pluginBundle {
+    website = 'https://github.com/Wyn-Price/CurseMaven'
+    vcsUrl = 'https://github.com/Wyn-Price/CurseMaven'
+    description = 'Allow easy access to curseforge files'
+
+    plugins() {
+        gradleHookPlugin {
+            displayName = 'CurseMaven'
+            version = project.version
+            tags = ['maven', 'curseforge', 'minecraft', 'forge']
+        }
+    }
+}
+
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -36,15 +72,4 @@ publishing {
             }
         }
     }
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    compile localGroovy()
-    
-    compile 'org.jsoup:jsoup:1.8.3'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
 }
