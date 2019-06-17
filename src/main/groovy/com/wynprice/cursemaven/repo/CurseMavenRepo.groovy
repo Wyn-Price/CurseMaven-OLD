@@ -5,47 +5,46 @@ import groovy.transform.TupleConstructor
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 
-import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
 @TupleConstructor class CurseMavenRepo  {
 
-    static final String REPO_NAME = "curse_gradle"
+    static final String GROUP_NAME = "curse_gradle"
 
     private static CurseMavenRepo INSTANCE
 
     Path baseDir
 
     static CurseMavenRepo setInstance(Project project) {
-        def path = Paths.get(project.gradle.gradleHomeDir.path, "caches", REPO_NAME)
+        def path = Paths.get(project.gradle.gradleHomeDir.path, "caches")
 
         project.repositories.maven { MavenArtifactRepository repo ->
-            repo.name = REPO_NAME
+            repo.name = GROUP_NAME
             repo.url = path.toUri()
         }
 
-        INSTANCE = new CurseMavenRepo(path)
+        INSTANCE = new CurseMavenRepo(path.resolve(GROUP_NAME))
     }
 
     static CurseMavenRepo getInstance() {
         return INSTANCE
     }
 
+    boolean isDepCached(CurseRepoDependency dep) {
+        dep.getFile(this.baseDir).exists()
+    }
+
     void putDep(CurseRepoDependency dep) {
-        //<group> / <name> / <version> / <name>-<version>.jar
-        def folder = this.baseDir.resolve(dep.name).resolve(dep.name).resolve(dep.version).toFile()
 
-        folder.mkdirs()
+        dep.getFolder(this.baseDir).mkdirs()
 
-        println folder
-
-        new File(folder, "${dep.name}-${dep.version}.jar").withOutputStream {
+        dep.getFile(this.baseDir).withOutputStream {
             it.write getBytes("${dep.url}/download")
         }
 
         if(dep.sourcesUrl != null) {
-            new File(folder, "${dep.name}-${dep.version}-sources.jar").withOutputStream {
+            dep.getFile(this.baseDir, "sources").withOutputStream {
                 it.write getBytes("${dep.sourcesUrl}/download")
             }
         }

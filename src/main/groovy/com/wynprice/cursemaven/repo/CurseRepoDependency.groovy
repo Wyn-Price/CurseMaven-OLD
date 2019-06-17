@@ -5,6 +5,8 @@ import groovy.transform.ToString
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.internal.artifacts.dependencies.DefaultExternalModuleDependency
 
+import java.nio.file.Path
+
 @ToString class CurseRepoDependency {
 
     final String url
@@ -24,8 +26,16 @@ import org.gradle.api.internal.artifacts.dependencies.DefaultExternalModuleDepen
         this.version = matcher.group(2).replaceAll("-", "_")
     }
 
+    File getFolder(Path baseFolder) {
+        baseFolder.resolve(this.name).resolve(this.version).toFile()
+    }
+
+    File getFile(Path baseFolder, String classifier = null) {
+        new File(getFolder(baseFolder), "${this.name}-${this.version}${classifier!=null?"-$classifier":""}.jar")
+    }
+
     Dependency createDependency() {
-        new DefaultExternalModuleDependency(this.name, this.name, this.version)
+        new DefaultExternalModuleDependency(CurseMavenRepo.GROUP_NAME, this.name, this.version)
     }
 
 }
