@@ -55,7 +55,8 @@ dependencies {
 The following would download ctm, without looking and downloading (if possible) the sources jar. It also enabled debugging. 
 
 # Dependencies
-It is possible for CurseMaven to download curseforge dependencies. These dependencies will be taken from the `Related Projects > Required Dependency` section of the curseforge file page. ![img](https://imgur.com/PnYR993.png)    
+It is possible for CurseMaven to download curseforge dependencies. These dependencies will be taken from the `Related Projects > Required Dependency` section of the curseforge file page. ![img](https://imgur.com/PnYR993.png)   
+
 Due to the way that ForgeGradle 2.3 works, to have curseforge dependencies you'll need to specify the dependency scope to use.    
 Should you do this? no. Can you do this? yes.   
 For example:   
@@ -71,10 +72,13 @@ Resolves dependencies from the curseforge file page.
 Let's use [this](https://minecraft.curseforge.com/projects/tinkers-construct/files/2693496) as an example. 
 To resolve the dependencies, first CurseMaven would look at the file donwload page: 
 ![img](https://imgur.com/34zt9wf.png)   
+
 CurseMaven first looks at at the `Supported Minecraft` section, and gets the minecraft versions of the main file.   
 ![img](https://imgur.com/AoH14s6.png)   
+
 It then looks at the acceptable minecraft versions, (in this case 1.12.2), and stores it.   
 We then look at the `Related Projects > Required Dependency` section of curseforge. ![img](https://imgur.com/PnYR993.png)   
+
 For each dependency that is required, the following is done:   
  - CurseMaven goes onto the [dependency files page](https://minecraft.curseforge.com/projects/mantle/files)   
  - It then through each file on that page, checking the game versions and seeing if it matches the acceptable file versions from earlier. If there are no matches, then it goes onto [the next page](https://minecraft.curseforge.com/projects/mantle/files?page=2) and looks there. If it reaches the last file page, and no file has been found then the project is declared unsolvable.   
