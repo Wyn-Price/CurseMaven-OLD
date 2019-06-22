@@ -55,7 +55,7 @@ dependencies {
 The following would download ctm, without looking and downloading (if possible) the sources jar. It also enabled debugging. 
 
 # Dependencies
-It is possible for CurseMaven to download curseforge dependencies. These dependencies will be taken from the `Related Projects > Required Dependency` section of the curseforge file page. ![img](https://imgur.com/PnYR993.png)   
+It is possible for CurseMaven to download curseforge dependencies. These dependencies will be taken from the `Related Projects > Required Dependency` section of the curseforge file page. ![img](https://imgur.com/PnYR993.png)         
 
 Due to the way that ForgeGradle 2.3 works, to have curseforge dependencies you'll need to specify the dependency scope to use.    
 Should you do this? no. Can you do this? yes.   
