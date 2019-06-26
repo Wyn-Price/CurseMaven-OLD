@@ -51,7 +51,7 @@ import org.jsoup.nodes.Document
     /**
      *  If true then the resolver will debug what it is doing as it does it. Useful for when things don't go correctly.
      */
-    boolean debug = true
+    boolean debug = false
 
     /**
      * Resolve a curseforge dependency.
@@ -122,12 +122,10 @@ import org.jsoup.nodes.Document
             additionalFiles.forEach { rowElement ->
                 def element = rowElement.select("td").get(1).select("a")
                 //Checks to see if the additional file ends with -sources.jar, and if so set the dependency sourcesUrl to the url of this file
-                println element.html()
                 if(element.html().endsWith("-sources.jar")) {
                     //Get the file id from the url
                     def matcher = CurseRepoDependency.URl_PATTERN.matcher"$CURSEFORGE_URL${element.attr("href")}"
                     if(matcher.matches()) {
-                        println matcher.group(2)
                         dependency.sourcesFileID = matcher.group(2)
                     }
                 }
