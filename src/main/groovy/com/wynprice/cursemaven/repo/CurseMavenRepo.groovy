@@ -1,6 +1,7 @@
 package com.wynprice.cursemaven.repo
 
 import com.wynprice.cursemaven.CurseMavenPlugin
+import com.wynprice.cursemaven.CurseMavenResolver
 import groovy.transform.TupleConstructor
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
@@ -66,13 +67,13 @@ import java.nio.file.Paths
 
         //Download and place the main file
         dep.getFile(this.baseDir).withOutputStream {
-            it.write getBytes("${dep.url}/download")
+            it.write getBytes("$CurseMavenResolver.EXTENDED_CURSEFORGE_URL/${dep.slug}/download/${dep.fileID}/file")
         }
 
         //If there is sources, download and place those sources
-        if(dep.sourcesUrl != null) {
+        if(dep.sourcesFileID) {
             dep.getFile(this.baseDir, "sources").withOutputStream {
-                it.write getBytes("${dep.sourcesUrl}/download")
+                it.write getBytes("$CurseMavenResolver.EXTENDED_CURSEFORGE_URL/${dep.slug}/download/${dep.sourcesFileID}/file")
             }
         }
     }
@@ -83,6 +84,7 @@ import java.nio.file.Paths
      * @return the byte array of gotten from the url
      */
     static byte[] getBytes(String url) {
+        println url
         new URL(url).getBytes([requestProperties: ["User-Agent": CurseMavenPlugin.USER_AGENT]])
     }
 

@@ -17,12 +17,7 @@ import java.util.regex.Pattern
     /**
      * The URL pattern used to extract the project slug and file ID from a url
      */
-    static final Pattern URl_PATTERN = Pattern.compile("\\Q$CurseMavenResolver.CURSEFORGE_URL\\E(.+)\\Q/files/\\E(\\d+)")
-
-    /**
-     * The file url that this dependency represents
-     */
-    final String url
+    static final Pattern URl_PATTERN = Pattern.compile("\\Q$CurseMavenResolver.EXTENDED_CURSEFORGE_URL/\\E(.+)\\Q/files/\\E(\\d+)")
 
     /**
      * The slug taken from <code>url</code>. Extracted with {@link CurseRepoDependency#URl_PATTERN}
@@ -35,9 +30,9 @@ import java.util.regex.Pattern
     final String fileID
 
     /**
-     * The file url of the sources that are linked to this dependency
+     * The file id of the sources that are linked to this dependency
      */
-    String sourcesUrl
+    String sourcesFileID
 
     /**
      * Create a new dependency from a url. The regular expression {@link CurseRepoDependency#URl_PATTERN} is used to take
@@ -47,9 +42,8 @@ import java.util.regex.Pattern
     CurseRepoDependency(String url) {
         def matcher = URl_PATTERN.matcher url
         if(!matcher.matches() || matcher.groupCount() != 2) {
-            this.url = this.slug = this.fileID = ""
+            this.slug = this.fileID = ""
         } else {
-            this.url = url
             this.slug = matcher.group(1).replaceAll("-", "_")
             this.fileID = matcher.group(2).replaceAll("-", "_")
         }
@@ -61,7 +55,7 @@ import java.util.regex.Pattern
      * @return whether this dependency is valid
      */
     boolean isValid() {
-        this.url.isEmpty()
+        !this.slug.isEmpty()
     }
 
     /**
