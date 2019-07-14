@@ -34,7 +34,7 @@ resolves the file [here](https://minecraft.curseforge.com/projects/jei/files/272
 
 ```gradle
 dependencies {
-  deobfCompile curse.resolve("ctm", "2724420")
+  deobfCompile curse.resolve("ctm", "2642375")
 }
 ```
 resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile` 
