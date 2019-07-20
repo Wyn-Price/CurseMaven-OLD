@@ -32,7 +32,7 @@ import java.nio.file.Paths
      * @param project the project to initialize from
      */
     static void initialize(Project project) {
-        def path = Paths.get(project.gradle.gradleHomeDir.path, "caches")
+        def path = Paths.get(project.gradle.gradleUserHomeDir.path, "caches")
 
         //Setup the maven
         project.repositories.maven { MavenArtifactRepository repo ->
