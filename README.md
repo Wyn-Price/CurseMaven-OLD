@@ -1,11 +1,11 @@
-# CurseMaven [![Build Status](https://travis-ci.org/Wyn-Price/CurseMaven.svg?branch=master)](https://travis-ci.org/Wyn-Price/CurseMaven)
+# [CurseMaven](https://login.gradle.org/plugin/com.wynprice.cursemaven) [![Build Status](https://travis-ci.org/Wyn-Price/CurseMaven.svg?branch=master)](https://travis-ci.org/Wyn-Price/CurseMaven)  
 Gradle plugin to allow easy access to curseforge files, without using the curseforge maven   
 
 # Applying the plugin
 Using the plugins DSL:
 ```gradle
 plugins {
-  id "com.wynprice.cursemaven" version "1.1.0"
+  id "com.wynprice.cursemaven" version "1.2.0"
 }
 ```
 Using legacy plugin application:
@@ -17,7 +17,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath "com.wynprice.cursemaven:CurseMaven:1.1.0"
+    classpath "com.wynprice.cursemaven:CurseMaven:1.2.0"
   }
 }
 
@@ -37,7 +37,39 @@ dependencies {
   deobfCompile curse.resolve("ctm", "2642375")
 }
 ```
-resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile` 
+resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile`
+
+# Download by ID
+`curse.resolveID` allows you to resolve the dependency by the projectID and fileID.
+```gradle
+dependencies {
+  compile curse.resolveID(238222, 2724420)
+}
+```
+resolves the file [here](https://minecraft.curseforge.com/projects/jei/files/2724420), with the scope `compile`
+
+```gradle
+dependencies {
+  deobfCompile curse.resolveID(267602, 2642375)
+}
+```
+resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile
+
+# Download by URL
+`curse.resolveURL` allows you to resolve the dependency by the url
+```gradle
+dependencies {
+  compile curse.resolveURL("https://minecraft.curseforge.com/projects/jei/files/2724420")
+}
+```
+resolves the file [here](https://minecraft.curseforge.com/projects/jei/files/2724420), with the scope `compile`
+
+```gradle
+dependencies {
+  deobfCompile curse.resolveID("https://minecraft.curseforge.com/projects/ctm/files/2642375")
+}
+```
+resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile
 
 # Custom Configuration
 By default, the plugin will download any additional jars with the `source` classifier (`-sources.jar`).    
