@@ -3,6 +3,7 @@ package com.wynprice.cursemaven
 import com.wynprice.cursemaven.repo.CurseMavenRepo
 import com.wynprice.cursemaven.repo.CurseRepoDependency
 import groovy.transform.TupleConstructor
+import org.gradle.api.GradleException
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.logging.Logger
 import org.jsoup.Jsoup
@@ -54,36 +55,51 @@ import org.jsoup.nodes.Document
     boolean debug = false
 
     /**
-     * Resolve a curseforge dependency.
+     * Resolve a curseforge dependency from the project slug and file ID.
      * @param slug the project's url slug <br>
      *      For example, resolving "https://minecraft.curseforge.com/projects/jei/files/2724420", the project slug would be "jei"
      * @param fileId the projects's file id. <br>
      *     For example, resolving "https://minecraft.curseforge.com/projects/jei/files/2724420", the file id would be "2724420"
-     *
-     * @return The base resolved dependency. This is the dependency at the slug and fileID that were provided.
+     * @return The resolved dependency. This is the dependency at the slug and fileID that were provided.
      */
     Dependency resolve(String slug, String fileId) {
-        //Get the formatted url
-        def url = "$EXTENDED_CURSEFORGE_URL/$slug/files/$fileId"
+        return resolveUrl("$EXTENDED_CURSEFORGE_URL/$slug/files/$fileId")
+    }
 
-        def list = new LinkedList<CurseRepoDependency>()
+    /**
+     * Resolve a curseforge dependency from the project ID and file ID
+     * @param projectID the project ID to use. <br>
+     *     For example, when resolving a JEI dependency, this would be "238222" (the project ID for JEI)
+     * @param fileID the project's file id. <br>
+     *     For example, resolving "https://minecraft.curseforge.com/projects/jei/files/2724420", the file id would be "2724420"
+     * @return The resolved dependency. This is the dependency at the projectID and fileID that were provided.
+     */
+    Dependency resolveID(int projectID, int fileID) {
+        def url = "https://minecraft.curseforge.com/projects/$projectID"
+        def redirect = getRedirect(url)
+        if(url == redirect) {
+            throw new GradleException("Unknown Project Id $projectID")
+        }
+        return resolveUrl("$redirect/files/$fileID")
+    }
+
+    /**
+     * Resolves the curseforge dependency from the url
+     * @param url the url to download from. An example would be: "https://minecraft.curseforge.com/projects/jei/files/2724420"
+     * @return the resolved dependency at the URL provided
+     */
+    Dependency resolveUrl(String url) {
         //Resolve this base page
-        def resolve = resolvePage(url, list)
-
-        //Go through all the dependencies and make sure they exist on the dummy maven
-        for (int i = 0; i < list.size(); i++) {
-            def dep = list.get(i)
-
-            //Make sure the dep is valid before trying to resolve it
-            if(!dep.isValid()) {
-                continue
-            }
+        def resolve = resolvePage(url)
 
 
-            if(!CurseMavenRepo.instance.isDepCached(dep)) {
-                log "Resolved Url: $dep"
-                CurseMavenRepo.instance.putDep dep
-            }
+        if(!resolve.isValid()) {
+            throw new GradleException("Could not resolve dependency for url $url as the format is invalid")
+        }
+
+        if(!CurseMavenRepo.instance.isDepCached(resolve)) {
+            log "Resolved Url: $resolve"
+            CurseMavenRepo.instance.putDep resolve
         }
 
         //Return the gradle api dependency
@@ -93,11 +109,9 @@ import org.jsoup.nodes.Document
     /**
      * Resolve a curseforge page. This passes the url to the CurseRepoDependency.
      * @param url The file page url to be passed in. For example, https://minecraft.curseforge.com/projects/jei/files/2724420
-     * @param deps the list of dependencies to add the resolved too
-     * @param doDeps Should we calculate/resolve deps.
-     * @return the dependency resolved from the <code>url</code>. This is essentially the same as <code>dependencyScope != null</code>
+     * @return the dependency resolved from the <code>url</code>.
      */
-    CurseRepoDependency resolvePage(String url, List<CurseRepoDependency> deps) {
+    CurseRepoDependency resolvePage(String url) {
         def dependency = new CurseRepoDependency(url)
 
         //Make sure the dependency isn't already caches
@@ -105,20 +119,9 @@ import org.jsoup.nodes.Document
             return dependency
         }
 
-        //Check to see if this dep has already been resolved.
-        //Go through all the other deps and check to see if the project slug is the same
-        for (def dep in deps) {
-            if(dep.slug == dependency.slug) {
-                return dependency
-            }
-        }
-
-        //Get the document for this page
-        def document = getDoc(url)
-
         //If we attach the sources, then we should look through all the additionalFiles and see which file ends with -sources.jar
         if(this.attachSource) {
-            def additionalFiles = document.select("thead.b-table-header.j-listing-table-header + tbody tr") //gets all the additional files
+            def additionalFiles = getDoc(url).select("thead.b-table-header.j-listing-table-header + tbody tr") //gets all the additional files
             additionalFiles.forEach { rowElement ->
                 def element = rowElement.select("td").get(1).select("a")
                 //Checks to see if the additional file ends with -sources.jar, and if so set the dependency sourcesUrl to the url of this file
@@ -132,8 +135,6 @@ import org.jsoup.nodes.Document
             }
         }
 
-        //Add the dependency to the dependencies list
-        deps.add(dependency)
         return dependency
     }
 
@@ -145,6 +146,21 @@ import org.jsoup.nodes.Document
         if(this.debug) {
             println info
         }
+    }
+
+    /**
+     * Gets the end result of redirects from the url
+     * @param url the starting url
+     * @return the end result, after the url is redirected
+     */
+    private String getRedirect(String url) {
+        HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection()
+        con.setRequestProperty("User-Agent", CurseMavenPlugin.USER_AGENT)
+        con.setInstanceFollowRedirects(false)
+        con.connect()
+        def redirect = con.getHeaderField("Location")
+        log "Url redirected $url -> $redirect"
+        return redirect
     }
 
     /**
