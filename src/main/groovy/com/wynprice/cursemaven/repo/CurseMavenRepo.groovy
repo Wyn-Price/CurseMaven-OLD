@@ -23,7 +23,7 @@ import java.nio.file.Paths
     private static CurseMavenRepo INSTANCE
 
     /**
-     * The root path of the repo. Is the same as $GRADLE_HOME/curse_gradle
+     * The root path of the repo. Is the same as $GRADLE_USER_HOME/curse_gradle
      */
     Path baseDir
 
