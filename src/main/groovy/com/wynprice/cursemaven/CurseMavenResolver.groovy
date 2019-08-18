@@ -63,6 +63,7 @@ import org.jsoup.nodes.Document
      * @return The resolved dependency. This is the dependency at the slug and fileID that were provided.
      */
     Dependency resolve(def slug, def fileId) {
+        log("Started resolving of slug: $slug, filID: $fileId")
         return resolveUrl("$EXTENDED_CURSEFORGE_URL/$slug/files/$fileId")
     }
 
@@ -75,6 +76,7 @@ import org.jsoup.nodes.Document
      * @return The resolved dependency. This is the dependency at the projectID and fileID that were provided.
      */
     Dependency resolveID(def projectID, def fileID) {
+        log("Started resolving of projectID: $projectID, filID: $fileID")
         def url = "https://minecraft.curseforge.com/projects/$projectID"
         def redirect = getRedirect(url)
         if(url == redirect) {
@@ -89,18 +91,23 @@ import org.jsoup.nodes.Document
      * @return the resolved dependency at the URL provided
      */
     Dependency resolveUrl(String url) {
+        log("Started resolving of $url")
         //Resolve this base page
         def resolve = resolvePage(url)
-
 
         if(!resolve.isValid()) {
             throw new GradleException("Could not resolve dependency for url $url as the format is invalid")
         }
 
+        def fileLocation = resolve.getFolder(CurseMavenRepo.instance.getBaseDir()).getAbsolutePath()
         if(!CurseMavenRepo.instance.isDepCached(resolve)) {
-            log "Resolved Url: $resolve"
-            CurseMavenRepo.instance.putDep resolve
+            log("Started Resolving of: $resolve to $fileLocation")
+            CurseMavenRepo.instance.putDep(resolve)
+        } else {
+            log("Dep already cached at $fileLocation, skipping")
         }
+
+        log("Returning dep ${CurseMavenRepo.GROUP_NAME}.${resolve.slug}.${resolve.fileID}")
 
         //Return the gradle api dependency
         return resolve.createDependency()
@@ -144,7 +151,7 @@ import org.jsoup.nodes.Document
      */
     private void log(String info) {
         if(this.debug) {
-            println info
+            println "[CurseMavenResolver] $info"
         }
     }
 
