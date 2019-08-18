@@ -62,7 +62,7 @@ import org.jsoup.nodes.Document
      *     For example, resolving "https://minecraft.curseforge.com/projects/jei/files/2724420", the file id would be "2724420"
      * @return The resolved dependency. This is the dependency at the slug and fileID that were provided.
      */
-    Dependency resolve(String slug, String fileId) {
+    Dependency resolve(def slug, def fileId) {
         return resolveUrl("$EXTENDED_CURSEFORGE_URL/$slug/files/$fileId")
     }
 
@@ -74,7 +74,7 @@ import org.jsoup.nodes.Document
      *     For example, resolving "https://minecraft.curseforge.com/projects/jei/files/2724420", the file id would be "2724420"
      * @return The resolved dependency. This is the dependency at the projectID and fileID that were provided.
      */
-    Dependency resolveID(int projectID, int fileID) {
+    Dependency resolveID(def projectID, def fileID) {
         def url = "https://minecraft.curseforge.com/projects/$projectID"
         def redirect = getRedirect(url)
         if(url == redirect) {
