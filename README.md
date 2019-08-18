@@ -5,7 +5,7 @@ Gradle plugin to allow easy access to curseforge files, without using the cursef
 Using the plugins DSL:
 ```gradle
 plugins {
-  id "com.wynprice.cursemaven" version "1.2.0"
+  id "com.wynprice.cursemaven" version "1.2.2"
 }
 ```
 Using legacy plugin application:
@@ -17,7 +17,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath "com.wynprice.cursemaven:CurseMaven:1.2.0"
+    classpath "com.wynprice.cursemaven:CurseMaven:1.2.2"
   }
 }
 
@@ -34,7 +34,7 @@ resolves the file [here](https://minecraft.curseforge.com/projects/jei/files/272
 
 ```gradle
 dependencies {
-  deobfCompile curse.resolve("ctm", "2642375")
+  deobfCompile curse.resolve("ctm", 2642375)
 }
 ```
 resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile`
@@ -50,7 +50,7 @@ resolves the file [here](https://minecraft.curseforge.com/projects/jei/files/272
 
 ```gradle
 dependencies {
-  deobfCompile curse.resolveID(267602, 2642375)
+  deobfCompile curse.resolveID("267602", "2642375")
 }
 ```
 resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile
@@ -70,6 +70,11 @@ dependencies {
 }
 ```
 resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile
+
+# Common Problems
+### My dependency isn't being resolved with the scope deobfCompile.
+(Logs should contain `Could not resolve: deobf.curse_gradle:<slug>:<data>`)
+ForgeGradle resolves deobf dependencies when the task `setupDecompWorkspace` is ran. Try re-running `setupDecompWorkspace`, then refreshing the workspace.
 
 # Custom Configuration
 By default, the plugin will download any additional jars with the `source` classifier (`-sources.jar`).    
