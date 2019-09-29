@@ -1,5 +1,6 @@
 package com.wynprice.cursemaven.repo
 
+
 import com.wynprice.cursemaven.CurseMavenPlugin
 import com.wynprice.cursemaven.CurseMavenResolver
 import groovy.transform.TupleConstructor
@@ -84,11 +85,7 @@ import java.nio.file.Paths
      * @return the byte array of gotten from the url
      */
     static byte[] getBytes(String url) {
-        println url
-        new URL(url).getBytes([requestProperties: ["User-Agent": CurseMavenPlugin.USER_AGENT]])
+        println "[CurseMavenRepo] Getting binary at $url"
+        CurseMavenPlugin.getPage(url).getWebResponse().getContentAsStream().bytes
     }
-
-
-
-
 }

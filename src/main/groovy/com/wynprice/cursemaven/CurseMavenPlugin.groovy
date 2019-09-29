@@ -1,5 +1,11 @@
 package com.wynprice.cursemaven
 
+import com.gargoylesoftware.css.parser.CSSErrorHandler
+import com.gargoylesoftware.css.parser.CSSException
+import com.gargoylesoftware.css.parser.CSSParseException
+import com.gargoylesoftware.htmlunit.DefaultCssErrorHandler
+import com.gargoylesoftware.htmlunit.Page
+import com.gargoylesoftware.htmlunit.WebClient
 import com.wynprice.cursemaven.repo.CurseMavenRepo
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -30,5 +36,18 @@ class CurseMavenPlugin implements Plugin<Project> {
         CurseMavenPlugin.project = project
         CurseMavenRepo.initialize project
         project.ext.set(VARIABLE_NAME, new CurseMavenResolver())
+    }
+
+    static Page getPage(String url) {
+        WebClient client = new WebClient()
+        client.setIncorrectnessListener { message, origin -> }
+        client.setCssErrorHandler( [
+                warning: { exception -> },
+                error: { exception -> },
+                fatalError: { exception -> }
+        ] as CSSErrorHandler
+        )
+        client.waitForBackgroundJavaScript(30000)
+        client.getPage url
     }
 }

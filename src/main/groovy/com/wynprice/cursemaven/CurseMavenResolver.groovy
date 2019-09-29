@@ -1,5 +1,8 @@
 package com.wynprice.cursemaven
 
+import com.gargoylesoftware.htmlunit.Page
+import com.gargoylesoftware.htmlunit.WebClient
+import com.gargoylesoftware.htmlunit.html.HtmlPage
 import com.wynprice.cursemaven.repo.CurseMavenRepo
 import com.wynprice.cursemaven.repo.CurseRepoDependency
 import groovy.transform.TupleConstructor
@@ -40,8 +43,6 @@ import org.jsoup.nodes.Document
      * The base Curseforge URL
      */
     static final String EXTENDED_CURSEFORGE_URL = "$CURSEFORGE_URL/minecraft/mc-mods"
-
-    static final Logger logger = CurseMavenPlugin.project.logger
 
     /**
      * If true, the resolver will look for additional artifacts that end with "-source.jar", and also down
@@ -161,11 +162,8 @@ import org.jsoup.nodes.Document
      * @return the end result, after the url is redirected
      */
     private String getRedirect(String url) {
-        HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection()
-        con.setRequestProperty("User-Agent", CurseMavenPlugin.USER_AGENT)
-        con.setInstanceFollowRedirects(false)
-        con.connect()
-        def redirect = con.getHeaderField("Location")
+        def page = CurseMavenPlugin.getPage(url)
+        def redirect = page.getUrl()
         log "Url redirected $url -> $redirect"
         return redirect
     }
@@ -177,7 +175,7 @@ import org.jsoup.nodes.Document
      */
     private Document getDoc(String url) {
         log "Downloading file $url"
-        logger.info "Downloading: $url"
-        Jsoup.connect(url).userAgent(CurseMavenPlugin.USER_AGENT).get()
+        Jsoup.parse(CurseMavenPlugin.getPage(url).getWebResponse().getContentAsString())
     }
+
 }
