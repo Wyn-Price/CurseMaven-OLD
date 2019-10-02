@@ -90,3 +90,6 @@ dependencies {
 }
 ```
 The following would download ctm, without looking and downloading (if possible) the sources jar. It also enabled debugging. 
+
+# Special Thanks to 
+ - [Tamaized](https://github.com/Tamaized) for working with me to figure out the cloudflare/403 issues.
