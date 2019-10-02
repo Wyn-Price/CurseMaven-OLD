@@ -31,6 +31,20 @@ class CurseMavenPlugin implements Plugin<Project> {
      */
     static Project project
 
+    static final WebClient client = new WebClient()
+
+    static {
+        client.options.SSLClientCipherSuites = ["TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"]
+        client.incorrectnessListener = { message, origin -> }
+        client.cssErrorHandler = ( [
+                warning: { exception -> },
+                error: { exception -> },
+                fatalError: { exception -> }
+        ] as CSSErrorHandler
+        )
+        client.waitForBackgroundJavaScript(30000)
+    }
+
     @Override
     void apply(Project project) {
         CurseMavenPlugin.project = project
@@ -39,15 +53,6 @@ class CurseMavenPlugin implements Plugin<Project> {
     }
 
     static Page getPage(String url) {
-        WebClient client = new WebClient()
-        client.setIncorrectnessListener { message, origin -> }
-        client.setCssErrorHandler( [
-                warning: { exception -> },
-                error: { exception -> },
-                fatalError: { exception -> }
-        ] as CSSErrorHandler
-        )
-        client.waitForBackgroundJavaScript(30000)
         client.getPage url
     }
 }
