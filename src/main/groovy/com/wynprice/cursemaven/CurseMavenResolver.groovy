@@ -175,7 +175,9 @@ import org.jsoup.nodes.Document
      */
     private Document getDoc(String url) {
         log "Downloading file $url"
-        Jsoup.parse(CurseMavenPlugin.getPage(url).getWebResponse().getContentAsString())
+        def parse = Jsoup.parse(CurseMavenPlugin.getPage(url).getWebResponse().getContentAsString())
+        log "Success downloading $url"
+        parse
     }
 
 }

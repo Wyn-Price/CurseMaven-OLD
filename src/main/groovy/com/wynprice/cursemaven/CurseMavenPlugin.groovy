@@ -1,11 +1,10 @@
 package com.wynprice.cursemaven
 
 import com.gargoylesoftware.css.parser.CSSErrorHandler
-import com.gargoylesoftware.css.parser.CSSException
-import com.gargoylesoftware.css.parser.CSSParseException
-import com.gargoylesoftware.htmlunit.DefaultCssErrorHandler
 import com.gargoylesoftware.htmlunit.Page
 import com.gargoylesoftware.htmlunit.WebClient
+import com.gargoylesoftware.htmlunit.html.HTMLParserListener
+import com.gargoylesoftware.htmlunit.javascript.JavaScriptErrorListener
 import com.wynprice.cursemaven.repo.CurseMavenRepo
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -35,13 +34,29 @@ class CurseMavenPlugin implements Plugin<Project> {
 
     static {
         client.options.SSLClientCipherSuites = ["TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"]
+        client.options.cssEnabled = false
+        client.options.throwExceptionOnFailingStatusCode = false
+        client.options.throwExceptionOnScriptError = false
+
+        //TODO: log to a file?
         client.incorrectnessListener = { message, origin -> }
-        client.cssErrorHandler = ( [
+        client.javaScriptErrorListener = ([
+                scriptException: { page, exception -> },
+                timeoutError: { page, allowedTime, executionTime -> },
+                malformedScriptURL: { page, url, malformedURLException -> },
+                loadScriptError: { page, scriptUrl, exception -> },
+                warn: { page, sourceName, line, lineSource, lineOffset -> },
+        ] as JavaScriptErrorListener)
+        client.cssErrorHandler = ([
                 warning: { exception -> },
                 error: { exception -> },
                 fatalError: { exception -> }
-        ] as CSSErrorHandler
-        )
+        ] as CSSErrorHandler)
+        client.HTMLParserListener = ([
+                error: { message, url, html, line, column, key -> },
+                warning: { message, url, html, line, column, key -> }
+        ] as HTMLParserListener)
+
         client.waitForBackgroundJavaScript(30000)
     }
 
