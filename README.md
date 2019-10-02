@@ -53,23 +53,23 @@ dependencies {
   deobfCompile curse.resolveID("267602", "2642375")
 }
 ```
-resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile
+resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile`
 
 # Download by URL
-`curse.resolveURL` allows you to resolve the dependency by the url
+`curse.resolveUrl` allows you to resolve the dependency by the url
 ```gradle
 dependencies {
-  compile curse.resolveURL("https://minecraft.curseforge.com/projects/jei/files/2724420")
+  compile curse.resolveUrl("https://minecraft.curseforge.com/projects/jei/files/2724420")
 }
 ```
 resolves the file [here](https://minecraft.curseforge.com/projects/jei/files/2724420), with the scope `compile`
 
 ```gradle
 dependencies {
-  deobfCompile curse.resolveURL("https://minecraft.curseforge.com/projects/ctm/files/2642375")
+  deobfCompile curse.resolveUrl("https://minecraft.curseforge.com/projects/ctm/files/2642375")
 }
 ```
-resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile
+resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile`
 
 # Common Problems
 ### My dependency isn't being resolved with the scope deobfCompile.
