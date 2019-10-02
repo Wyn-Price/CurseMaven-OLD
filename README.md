@@ -53,7 +53,7 @@ dependencies {
   deobfCompile curse.resolveID("267602", "2642375")
 }
 ```
-resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile
+resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile`
 
 # Download by URL
 `curse.resolveUrl` allows you to resolve the dependency by the url
@@ -69,7 +69,7 @@ dependencies {
   deobfCompile curse.resolveUrl("https://minecraft.curseforge.com/projects/ctm/files/2642375")
 }
 ```
-resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile
+resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile`
 
 # Common Problems
 ### My dependency isn't being resolved with the scope deobfCompile.
