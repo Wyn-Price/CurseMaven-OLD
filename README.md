@@ -56,7 +56,7 @@ dependencies {
 resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile
 
 # Download by URL
-`curse.resolveURL` allows you to resolve the dependency by the url
+`curse.resolveUrl` allows you to resolve the dependency by the url
 ```gradle
 dependencies {
   compile curse.resolveUrl("https://minecraft.curseforge.com/projects/jei/files/2724420")
