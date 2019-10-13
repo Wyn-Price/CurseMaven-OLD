@@ -2,10 +2,11 @@
 Gradle plugin to allow easy access to curseforge files, without using the curseforge maven   
 
 # Applying the plugin
+To see latest version, look [here](https://login.gradle.org/plugin/com.wynprice.cursemaven)
 Using the plugins DSL:
 ```gradle
 plugins {
-  id "com.wynprice.cursemaven" version "1.2.2"
+  id "com.wynprice.cursemaven" version "x.x.x"
 }
 ```
 Using legacy plugin application:
@@ -17,7 +18,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath "com.wynprice.cursemaven:CurseMaven:1.2.2"
+    classpath "com.wynprice.cursemaven:CurseMaven:x.x.x"
   }
 }
 
