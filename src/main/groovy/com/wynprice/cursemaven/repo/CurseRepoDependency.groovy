@@ -1,5 +1,6 @@
 package com.wynprice.cursemaven.repo
 
+import com.wynprice.cursemaven.CurseMavenPlugin
 import com.wynprice.cursemaven.CurseMavenResolver
 import groovy.transform.ToString
 import org.gradle.api.artifacts.Dependency
@@ -11,13 +12,15 @@ import java.util.regex.Pattern
 /**
  * A class to store the artifacts for a curse maven dependency
  * @author Wyn Price
+ * @deprecated As of 1.3.0
  */
+@Deprecated
 @ToString class CurseRepoDependency {
 
     /**
      * The URL pattern used to extract the project slug and file ID from a url
      */
-    static final Pattern URl_PATTERN = Pattern.compile("\\Q$CurseMavenResolver.EXTENDED_CURSEFORGE_URL/\\E(.+)\\Q/files/\\E(\\d+)")
+    static final Pattern URl_PATTERN = Pattern.compile("\\Q$CurseMavenPlugin.EXTENDED_CURSEFORGE_URL/\\E(.+)\\Q/files/\\E(\\d+)")
 
     /**
      * The slug taken from <code>url</code>. Extracted with {@link CurseRepoDependency#URl_PATTERN}

@@ -13,7 +13,9 @@ import java.nio.file.Paths
 /**
  * The repo class used to control the caching and checking of dependencies
  * @author Wyn Price
+ * @deprecated As of 1.3.0. The string based version is much better, and happenes at repository time.
  */
+@Deprecated
 @TupleConstructor class CurseMavenRepo  {
 
     /**
@@ -68,13 +70,13 @@ import java.nio.file.Paths
 
         //Download and place the main file
         dep.getFile(this.baseDir).withOutputStream {
-            it.write getBytes("$CurseMavenResolver.EXTENDED_CURSEFORGE_URL/${dep.slug}/download/${dep.fileID}/file")
+            it.write getBytes("$CurseMavenPlugin.EXTENDED_CURSEFORGE_URL/${dep.slug}/download/${dep.fileID}/file")
         }
 
         //If there is sources, download and place those sources
         if(dep.sourcesFileID) {
             dep.getFile(this.baseDir, "sources").withOutputStream {
-                it.write getBytes("$CurseMavenResolver.EXTENDED_CURSEFORGE_URL/${dep.slug}/download/${dep.sourcesFileID}/file")
+                it.write getBytes("$CurseMavenPlugin.EXTENDED_CURSEFORGE_URL/${dep.slug}/download/${dep.sourcesFileID}/file")
             }
         }
     }

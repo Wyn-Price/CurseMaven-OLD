@@ -1,14 +1,11 @@
 package com.wynprice.cursemaven
 
-import com.gargoylesoftware.htmlunit.Page
-import com.gargoylesoftware.htmlunit.WebClient
-import com.gargoylesoftware.htmlunit.html.HtmlPage
+
 import com.wynprice.cursemaven.repo.CurseMavenRepo
 import com.wynprice.cursemaven.repo.CurseRepoDependency
 import groovy.transform.TupleConstructor
 import org.gradle.api.GradleException
 import org.gradle.api.artifacts.Dependency
-import org.gradle.api.logging.Logger
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
@@ -31,18 +28,10 @@ import org.jsoup.nodes.Document
  *      new CurseMavenResolver(attachSource: true, debug:true)  -> creates a resolver with "attachSource" true and "debug" true
  *  </pre>
  *  @author Wyn Price
+ *  @deprecated As of 1.3.0, the resolver is no longer used to manage resources.
  */
+@Deprecated
 @TupleConstructor class CurseMavenResolver {
-
-    /**
-     * The base Curseforge URL
-     */
-    static final String CURSEFORGE_URL = "https://www.curseforge.com"
-
-    /**
-     * The base Curseforge URL
-     */
-    static final String EXTENDED_CURSEFORGE_URL = "$CURSEFORGE_URL/minecraft/mc-mods"
 
     /**
      * If true, the resolver will look for additional artifacts that end with "-source.jar", and also down
@@ -64,8 +53,9 @@ import org.jsoup.nodes.Document
      * @return The resolved dependency. This is the dependency at the slug and fileID that were provided.
      */
     Dependency resolve(def slug, def fileId) {
+        println("'curse.resolve($slug, $fileId)' is deprecated. Please use the \"curse.maven:$slug:$fileId\" instead")
         log("Started resolving of slug: $slug, filID: $fileId")
-        return resolveUrl("$EXTENDED_CURSEFORGE_URL/$slug/files/$fileId")
+        return resolveUrl("$CurseMavenPlugin.EXTENDED_CURSEFORGE_URL/$slug/files/$fileId")
     }
 
     /**
@@ -77,6 +67,7 @@ import org.jsoup.nodes.Document
      * @return The resolved dependency. This is the dependency at the projectID and fileID that were provided.
      */
     Dependency resolveID(def projectID, def fileID) {
+        println("'curse.resolveID($projectID, $fileID)' is deprecated. Please use the \"curse.maven.id:$projectID:$fileID\" instead")
         log("Started resolving of projectID: $projectID, filID: $fileID")
         def url = "https://minecraft.curseforge.com/projects/$projectID"
         def redirect = getRedirect(url)
@@ -92,6 +83,8 @@ import org.jsoup.nodes.Document
      * @return the resolved dependency at the URL provided
      */
     Dependency resolveUrl(String url) {
+        println("'curse.resolveUrl($url)' is deprecated. All calls to this should be changed to \"curse.maven:slug:filID\" instead")
+
         log("Started resolving of $url")
         //Resolve this base page
         def resolve = resolvePage(url)
@@ -120,6 +113,7 @@ import org.jsoup.nodes.Document
      * @return the dependency resolved from the <code>url</code>.
      */
     CurseRepoDependency resolvePage(String url) {
+
         def dependency = new CurseRepoDependency(url)
 
         //Make sure the dependency isn't already caches
@@ -135,7 +129,7 @@ import org.jsoup.nodes.Document
                 //Checks to see if the additional file ends with -sources.jar, and if so set the dependency sourcesUrl to the url of this file
                 if(element.html().endsWith("-sources.jar")) {
                     //Get the file id from the url
-                    def matcher = CurseRepoDependency.URl_PATTERN.matcher"$CURSEFORGE_URL${element.attr("href")}"
+                    def matcher = CurseRepoDependency.URl_PATTERN.matcher"$CurseMavenPlugin.CURSEFORGE_URL${element.attr("href")}"
                     if(matcher.matches()) {
                         dependency.sourcesFileID = matcher.group(2)
                     }
