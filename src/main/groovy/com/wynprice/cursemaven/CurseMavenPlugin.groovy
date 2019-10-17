@@ -1,6 +1,7 @@
 package com.wynprice.cursemaven
 
 import com.gargoylesoftware.css.parser.CSSErrorHandler
+import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException
 import com.gargoylesoftware.htmlunit.Page
 import com.gargoylesoftware.htmlunit.WebClient
 import com.gargoylesoftware.htmlunit.html.HTMLParserListener
@@ -48,10 +49,10 @@ class CurseMavenPlugin implements Plugin<Project> {
     static final WebClient client = new WebClient()
 
     static {
-//        client.options.javaScriptEnabled = false
+        client.options.javaScriptEnabled = false
         client.options.SSLClientCipherSuites = ["TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"]
         client.options.cssEnabled = false
-        client.options.throwExceptionOnFailingStatusCode = false
+        client.options.throwExceptionOnFailingStatusCode = true
         client.options.throwExceptionOnScriptError = false
 
         //TODO: log to a file?
@@ -111,6 +112,12 @@ class CurseMavenPlugin implements Plugin<Project> {
     }
 
     static Page getPage(String url) {
-        client.getPage url
+        client.options.javaScriptEnabled = false
+        try {
+            return client.getPage(url)
+        } catch(FailingHttpStatusCodeException e) {
+            client.options.javaScriptEnabled = true
+            return client.getPage(url)
+        }
     }
 }
