@@ -49,6 +49,7 @@ class CurseMavenPlugin implements Plugin<Project> {
     static final WebClient client = new WebClient()
 
     static {
+        //Disable all the unneeded things on the web client.
         client.options.javaScriptEnabled = false
         client.options.SSLClientCipherSuites = ["TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA"]
         client.options.cssEnabled = false
@@ -80,26 +81,37 @@ class CurseMavenPlugin implements Plugin<Project> {
     @Override
     void apply(Project project) {
 
+        //Create a new maven from the repository handler, then remove it, so I can delegate to it
         def repos = project.repositories as DefaultRepositoryHandler
         def newMaven = repos.maven { url = "http://www.wynprice.com/dummycursemaven" } as DefaultMavenArtifactRepository
         repos.remove newMaven
 
+        //Create a new repository using the Proxy API. The new repo will implement ResolutionAwareRepository and ArtifactRepository
         //The proxy is used to allow for the plugin to be used over a variety of gradle versions.
         ArtifactRepository repo = Proxy.newProxyInstance(this.class.classLoader, [ResolutionAwareRepository, ArtifactRepository] as Class[], { proxy, method, args ->
 
+            //Delegate the ResolutionAwareRepository#createResolver method.
             if(method.name == "createResolver") {
+                //The created resolver to edit
                 def resolver = newMaven.createResolver()
 
+
+                //Get the list of artifact patterns. We then add our own artifact pattern to the list.
+                //The new artifact pattern will take in the slug and file id (or project id and file id) and delegate to the actual curse maven repo.
                 def list = ExternalResourceResolver.class.getDeclaredField("artifactPatterns").identity { setAccessible(true); it }.get(resolver) as List<ResourcePattern>
-                list.remove(0)
                 list.add(new CurseResourcePattern())
 
                 return resolver
             }
+
+            //Overrides ArtifactRepository#setName
+            //I cannot set the name of the repo twice. It is already set from when it was created from the repository handler.
             if(method.name == "setName") {
-                //NO-OP, we can't re-set the name
+                //NO-OP, I can't re-set the name
                 return Void.class
             }
+
+            //We don't need to override the class. Delegate to the normal method.
             return method.invoke(newMaven, args)
         } as InvocationHandler) as ArtifactRepository
 
@@ -111,13 +123,27 @@ class CurseMavenPlugin implements Plugin<Project> {
         project.ext.set(VARIABLE_NAME, new CurseMavenResolver())
     }
 
+    /**
+     * Gets the curseforge page given the url
+     * @param url the url
+     * @return the page object for the url
+     */
     static Page getPage(String url) {
+        //Sometimes, depending on the circumstances, cloudflare will require js to be used.
+        //First we should try to get the page without js, as it's faster.
+        //If that fails, then try to do it with javascript
         client.options.javaScriptEnabled = false
         try {
             return client.getPage(url)
-        } catch(FailingHttpStatusCodeException e) {
+        } catch(FailingHttpStatusCodeException ignored) {
             client.options.javaScriptEnabled = true
-            return client.getPage(url)
+            try {
+                return client.getPage(url)
+            } catch(Exception e) {
+                //When this is called, anything thrown will just be consumed. This is to print out the error to the client.
+                e.printStackTrace()
+                throw e
+            }
         }
     }
 }

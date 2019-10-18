@@ -55,7 +55,7 @@ import org.jsoup.nodes.Document
     Dependency resolve(def slug, def fileId) {
         println("'curse.resolve($slug, $fileId)' is deprecated. Please use the \"curse.maven:$slug:$fileId\" instead")
         log("Started resolving of slug: $slug, filID: $fileId")
-        return resolveUrl("$CurseMavenPlugin.EXTENDED_CURSEFORGE_URL/$slug/files/$fileId")
+        return resolveUrl("$CurseMavenPlugin.EXTENDED_CURSEFORGE_URL/$slug/files/$fileId", true)
     }
 
     /**
@@ -74,7 +74,7 @@ import org.jsoup.nodes.Document
         if(url == redirect) {
             throw new GradleException("Unknown Project Id $projectID")
         }
-        return resolveUrl("$redirect/files/$fileID")
+        return resolveUrl("$redirect/files/$fileID", true)
     }
 
     /**
@@ -82,8 +82,10 @@ import org.jsoup.nodes.Document
      * @param url the url to download from. An example would be: "https://minecraft.curseforge.com/projects/jei/files/2724420"
      * @return the resolved dependency at the URL provided
      */
-    Dependency resolveUrl(String url) {
-        println("'curse.resolveUrl($url)' is deprecated. All calls to this should be changed to \"curse.maven:slug:filID\" instead")
+    Dependency resolveUrl(String url, boolean logged = false) {
+        if(logged) {
+            println("'curse.resolveUrl($url)' is deprecated. All calls to this should be changed to \"curse.maven:slug:filID\" instead")
+        }
 
         log("Started resolving of $url")
         //Resolve this base page
