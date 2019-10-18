@@ -32,7 +32,7 @@ class CurseResourcePattern extends M2ResourcePattern {
     protected String substituteTokens(String pattern, Map<String, String> attributes) {
         //If the organization starts with `curse.`maven, then try and resolve it.
         //Regarding the reversion regex matcher, this can occur when other plugins deobfuscate the dependency and put it in their own repo. IE forge gradle.
-        if(attributes.containsKey("organisation") && attributes.get("organisation").startsWith("curse.maven") && attributes.get("revision").matches("^\\d+\\\$")) {
+        if(attributes.containsKey("organisation") && attributes.get("organisation").startsWith("curse.maven") && attributes.get("revision").matches("^\\d+\$")) {
             return "/files" + getExtension(attributes.get("organisation"), attributes.get("module"), attributes.get("revision"), attributes.get("classifier"))
         }
         return super.substituteTokens(pattern, attributes)
@@ -70,8 +70,10 @@ class CurseResourcePattern extends M2ResourcePattern {
                 //Get the redirected url given the project id. This allows us to get the project slug
                 def redirectUrl = "https://minecraft.curseforge.com/projects/$artifactID"
                 def redirect = CurseMavenPlugin.getPage(redirectUrl).getUrl().getPath()
-                if(redirectUrl == redirect) {
-                    throw new GradleException("Unknown Project Id $artifactID")
+                if(redirectUrl.split("/").last() == redirect.split("/").last()) {
+                    def err = "Unknown Project Id $artifactID"
+                    println(err)
+                    throw new IllegalArgumentException(err)
                 }
                 url = "$redirect/files/$versionID"
                 break
