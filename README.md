@@ -28,14 +28,16 @@ apply plugin: "com.wynprice.cursemaven"
 # Simple usage
 ```gradle
 dependencies {
-  compile curse.resolve("jei", "2724420")
+  compile "curse.maven:jei:2724420" //For versions 2+
+  compile curse.resolve("jei", "2724420") //For versions 1.x.x
 }
 ```
 resolves the file [here](https://minecraft.curseforge.com/projects/jei/files/2724420), with the scope `compile`
 
 ```gradle
 dependencies {
-  deobfCompile curse.resolve("ctm", 2642375)
+  deobfCompile "curse.maven:ctm:2642375" //For versions 2+
+  deobfCompile curse.resolve("ctm", "2642375") //For versions 1.x.x
 }
 ```
 resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile`
@@ -44,20 +46,22 @@ resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/264
 `curse.resolveID` allows you to resolve the dependency by the projectID and fileID.
 ```gradle
 dependencies {
-  compile curse.resolveID(238222, 2724420)
+  compile "curse.maven.id:238222:2724420" //For versions 2+
+  compile curse.resolveID(238222, 2724420) //For versions 1.x.x
 }
 ```
 resolves the file [here](https://minecraft.curseforge.com/projects/jei/files/2724420), with the scope `compile`
 
 ```gradle
 dependencies {
-  deobfCompile curse.resolveID("267602", "2642375")
+  deobfCompile "curse.maven.id:267602:2642375" //For versions 2+
+  deobfCompile curse.resolveID("267602", "2642375") //For versions 1.x.x
 }
 ```
 resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile`
 
 # Download by URL
-`curse.resolveUrl` allows you to resolve the dependency by the url
+`curse.resolveUrl` allows you to resolve the dependency by the url (Removed in versions 2+)
 ```gradle
 dependencies {
   compile curse.resolveUrl("https://minecraft.curseforge.com/projects/jei/files/2724420")
@@ -77,7 +81,7 @@ resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/264
 (Logs should contain `Could not resolve: deobf.curse_gradle:<slug>:<data>`)
 ForgeGradle resolves deobf dependencies when the task `setupDecompWorkspace` is ran. Try re-running `setupDecompWorkspace`, then refreshing the workspace.
 
-# Custom Configuration
+# Custom Configuration (Only avliable in versions 1.x.x)
 By default, the plugin will download any additional jars with the `source` classifier (`-sources.jar`).    
 By default, the plugin will not do any debug logging.    
 To change these properties, you need to define your own resolver.
