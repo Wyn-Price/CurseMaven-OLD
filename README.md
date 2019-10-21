@@ -48,14 +48,14 @@ dependencies {
   compile "curse.maven:jei:2724420"
 }
 ```
-resolves the file [here](https://minecraft.curseforge.com/projects/jei/files/2724420), with the scope `compile`
+resolves the file [here](https://www.curseforge.com/minecraft/mc-mods/jei/files/2724420), with the scope `compile`
 
 ```gradle
 dependencies {
   deobfCompile "curse.maven:ctm:2642375"
 }
 ```
-resolves the file [here](https://minecraft.curseforge.com/projects/ctm/files/2642375), with the scope `deobfCompile`
+resolves the file [here](https://www.curseforge.com/minecraft/mc-mods/ctm/files/2642375), with the scope `deobfCompile`
 
 # Special Thanks to 
  - [Tamaized](https://github.com/Tamaized) for working with me to figure out the cloudflare/403 issues.
