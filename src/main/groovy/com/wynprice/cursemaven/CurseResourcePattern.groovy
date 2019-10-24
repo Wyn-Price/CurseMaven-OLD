@@ -33,8 +33,12 @@ class CurseResourcePattern extends M2ResourcePattern {
         //Regarding the reversion regex matcher, this can occur when other plugins deobfuscate the dependency and put it in their own repo. IE forge gradle.
         if(attributes.get("organisation") == "curse.maven" && attributes.get("revision").matches("^\\d+\$")) {
             try {
-                return getExtension(attributes.get("module"), attributes.get("revision"), attributes.get("classifier")).substring(DOWNLOAD_URL.length())
+                Optional<String> result = getExtension(attributes.get("module"), attributes.get("revision"), attributes.get("classifier"))
+                if(result.isPresent()) {
+                    return result.get().substring(DOWNLOAD_URL.length())
+                }
             } catch(Exception e) {
+                println e.message
                 e.printStackTrace()
             }
         }
@@ -48,7 +52,7 @@ class CurseResourcePattern extends M2ResourcePattern {
      * @param classifier the artifact classifier.
      * @return the extension for the given artifacts.
      */
-    static String getExtension(String artifactID, String versionID, String classifier) {
+    static Optional<String> getExtension(String artifactID, String versionID, String classifier) {
 
         //Gets the cache key for this object. the classifier can be null, hence why Objects.toString is used.
         def cacheKey = "$versionID:${Objects.toString(classifier)}".toString()
@@ -56,32 +60,42 @@ class CurseResourcePattern extends M2ResourcePattern {
         //If the cache exists, return it
         def cache = EXTENSION_CACHE.get(cacheKey)
         if(cache != null) {
-            return cache
+            return Optional.of(cache)
         }
 
-        def result = ""
-        if(classifier == null) {
-            result = new URL("https://addons-ecs.forgesvc.net/api/v2/addon/0/file/$versionID/download-url").text
-        } else {
+        //Get the normal jar result. This should never be empty.
+        def result = new URL("https://addons-ecs.forgesvc.net/api/v2/addon/0/file/$versionID/download-url").text
+        if(result.isEmpty()) {
+            throw new IllegalArgumentException("Version ID is invalid. Artifact: '$artifactID', VersionId: '$versionID'")
+        }
+
+        //If we need to search for a classifier, then do so
+        if(classifier != null) {
+            //Get the normal, no classifier jar name, and the file id for that jar name
+            def jarName = result.substring(0, result.length() - ".jar".length())
             def start = Integer.parseInt(versionID)
+            boolean found = false
+
+            //Go from the current file version to 20 + the current file version.
+            //For each version, get the download url and see if it matches with the found jar name, along with the -classifier prefix.
+            //If so then set the result to that and mark the classifier as found
             for(int i = 1; i <= 20; i++) {
                 def tryResult = new URL("https://addons-ecs.forgesvc.net/api/v2/addon/0/file/${start + i}/download-url").text
-                if(tryResult.endsWith("-${classifier}.jar")) {
+                if(tryResult.endsWith("/$jarName-${classifier}.jar")) {
                     result = tryResult
+                    found = true
                     break
                 }
             }
-        }
 
-
-        if(result.isEmpty()) {
-            def err = "Version ID is invalid. Artifact: '$artifactID', VersionId: '$versionID'"
-            println err
-            throw new IllegalArgumentException(err)
+            //Classifier could not be found, this is fine.
+            if(!found) {
+                return Optional.empty()
+            }
         }
 
         EXTENSION_CACHE.put(cacheKey, result)
-        return result
+        Optional.ofNullable(result)
     }
 }
 
