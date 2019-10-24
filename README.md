@@ -36,7 +36,7 @@ buildscript {
 
 apply plugin: "com.wynprice.cursemaven"
 ```
-
+NOTE - the old way of doing `curse.resolve` and `curse.resolveID` will still work. (but not `curse.resolveURL`)
 # Usage
 Using the plugin is very simple. The dependency format is as follows:  
 `curse.maven:<descriptor>:<fileid>`
