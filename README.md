@@ -56,6 +56,9 @@ dependencies {
 }
 ```
 resolves the file [here](https://www.curseforge.com/minecraft/mc-mods/ctm/files/2642375), with the scope `deobfCompile`
-
+# Common Problems
+### My dependency isn't being resolved with the scope deobfCompile.
+(Logs should contain `Could not resolve: deobf.curse.maven:<slug>:<data>`)
+ForgeGradle resolves deobf dependencies when the task `setupDecompWorkspace` is ran. Try re-running `setupDecompWorkspace`, then refreshing the workspace.
 # Special Thanks to 
  - [Tamaized](https://github.com/Tamaized) for working with me to figure out the cloudflare/403 issues.
