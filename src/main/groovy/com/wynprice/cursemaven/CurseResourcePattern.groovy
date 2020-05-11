@@ -80,10 +80,14 @@ class CurseResourcePattern extends M2ResourcePattern {
             //For each version, get the download url and see if it matches with the found jar name, along with the -classifier prefix.
             //If so then set the result to that and mark the classifier as found
             for(int i = 1; i <= 20; i++) {
-                def tryResult = new URL("https://addons-ecs.forgesvc.net/api/v2/addon/0/file/${start + i}/download-url").text
-                if(tryResult.endsWith("/$jarName-${classifier}.jar")) {
-                    result = tryResult
-                    found = true
+                try {
+                    def tryResult = new URL("https://addons-ecs.forgesvc.net/api/v2/addon/0/file/${start + i}/download-url").text
+                    if(tryResult.endsWith("/$jarName-${classifier}.jar")) {
+                        result = tryResult
+                        found = true
+                        break
+                    }
+                } catch(FileNotFoundException ignored) {
                     break
                 }
             }
