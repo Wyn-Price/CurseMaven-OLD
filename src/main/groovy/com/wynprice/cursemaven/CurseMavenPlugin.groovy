@@ -8,6 +8,7 @@ import org.gradle.api.internal.artifacts.repositories.DefaultMavenArtifactReposi
 import org.gradle.api.internal.artifacts.repositories.ResolutionAwareRepository
 import org.gradle.api.internal.artifacts.repositories.resolver.ExternalResourceResolver
 import org.gradle.api.internal.artifacts.repositories.resolver.ResourcePattern
+import org.gradle.internal.impldep.org.apache.http.impl.client.DefaultRedirectStrategy
 
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Proxy
@@ -28,7 +29,13 @@ class CurseMavenPlugin implements Plugin<Project> {
 
         //Create a new maven from the repository handler, then remove it, so I can delegate to it
         def repos = project.repositories as DefaultRepositoryHandler
-        def newMaven = repos.maven { url = "http://www.wynprice.com/dummycursemaven" } as DefaultMavenArtifactRepository
+        def newMaven = repos.maven {
+            url = "http://www.wynprice.com/dummycursemaven"
+            metadataSources {
+                artifact()
+            }
+
+        } as DefaultMavenArtifactRepository
         repos.remove newMaven
 
         //Create a new repository using the Proxy API. The new repo will implement ResolutionAwareRepository and ArtifactRepository
@@ -46,6 +53,8 @@ class CurseMavenPlugin implements Plugin<Project> {
                 def list = ExternalResourceResolver.class.getDeclaredField("artifactPatterns").identity {
                     setAccessible(true); it
                 }.get(resolver) as List<ResourcePattern>
+                list.clear()
+
                 list.add(new CurseResourcePattern())
 
                 return resolver
