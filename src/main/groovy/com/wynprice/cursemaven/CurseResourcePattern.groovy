@@ -31,9 +31,10 @@ class CurseResourcePattern extends M2ResourcePattern {
     protected String substituteTokens(String pattern, Map<String, String> attributes) {
         //If the organization is equal to `curse.`maven, then try and resolve it.
         //Regarding the reversion regex matcher, this can occur when other plugins deobfuscate the dependency and put it in their own repo. IE forge gradle.
-        if(attributes.get("organisation") == "curse.maven" && attributes.get("revision").matches("^\\d+\$")) {
+        def matcher = attributes.get("revision") =~ /^\d+/
+        if(attributes.get("organisation") == "curse.maven" && matcher.find()) {
             try {
-                Optional<String> result = getExtension(attributes.get("module"), attributes.get("revision"), attributes.get("classifier"))
+                Optional<String> result = getExtension(attributes.get("module"), matcher.group(0), attributes.get("classifier"))
                 if(result.isPresent()) {
                     return result.get().substring(DOWNLOAD_URL.length())
                 }
