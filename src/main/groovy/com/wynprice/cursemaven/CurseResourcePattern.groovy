@@ -73,7 +73,7 @@ class CurseResourcePattern extends M2ResourcePattern {
         //If we need to search for a classifier, then do so
         if(classifier != null) {
             //Get the normal, no classifier jar name, and the file id for that jar name
-            def jarName = result.substring(0, result.length() - ".jar".length())
+            def jarName = result.substring(result.lastIndexOf('/'), result.length() - ".jar".length())
             def start = Integer.parseInt(versionID)
             boolean found = false
 
@@ -83,7 +83,7 @@ class CurseResourcePattern extends M2ResourcePattern {
             for(int i = 1; i <= 20; i++) {
                 try {
                     def tryResult = new URL("https://addons-ecs.forgesvc.net/api/v2/addon/0/file/${start + i}/download-url").text
-                    if(tryResult.endsWith("/$jarName-${classifier}.jar")) {
+                    if(tryResult.endsWith("$jarName-${classifier}.jar")) {
                         result = tryResult
                         found = true
                         break
