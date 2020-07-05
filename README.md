@@ -1,3 +1,4 @@
+# CurseMaven has been rewritten into a [website](https://www.cursemaven.com/). This gradle plugin is now obselete. 
 # [CurseMaven](https://login.gradle.org/plugin/com.wynprice.cursemaven) [![Build Status](https://travis-ci.org/Wyn-Price/CurseMaven.svg?branch=master)](https://travis-ci.org/Wyn-Price/CurseMaven)  
 Gradle plugin to allow easy access to curseforge files, without using the curseforge maven.
 
